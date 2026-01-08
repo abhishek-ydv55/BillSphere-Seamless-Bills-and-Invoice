@@ -36,7 +36,8 @@
     "files": [
       "src/**/*",
       "build/**/*",
-      "main.js"
+      "main.js",
+      "preload.js"
     ],
     "nsis": {
       "oneClick": false,

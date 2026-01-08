@@ -13,7 +13,8 @@ const createWindow = () => {
         icon: path.join(__dirname, 'build', 'bill_sphere.png'),
         webPreferences: {
             nodeIntegration: false,
-            contextIsolation: true
+            contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js')
         }
     });
 
