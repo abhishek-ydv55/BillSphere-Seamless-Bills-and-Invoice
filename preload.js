@@ -14,6 +14,12 @@ contextBridge.exposeInMainWorld('electronStore', {
   // Renderer to Main: Clear all data
   clear: () => ipcRenderer.invoke('electron-store-clear'),
 
+  // Renderer to Main: Trigger update download
+  downloadUpdate: () => ipcRenderer.send('download_update'),
+
+  // Renderer to Main: Install update
+  installUpdate: () => ipcRenderer.send('install_update'),
+
   // Main to Renderer: Listen for an event (if needed in the future)
   on: (channel, callback) => {
     ipcRenderer.on(channel, (event, ...args) => callback(...args));

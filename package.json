@@ -1,6 +1,6 @@
 {
   "name": "billsphere",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "BillSphere Invoice System",
   "main": "main.js",
   "scripts": {
@@ -12,9 +12,20 @@
     "electron": "^29.1.0",
     "electron-builder": "^24.13.3"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/abhishek-ydv55/BillSphere-Seamless-Bills-and-Invoice.git"
+  },
   "build": {
     "appId": "com.billsphere.app",
     "productName": "BillSphere",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "abhishek-ydv55",
+        "repo": "BillSphere-Seamless-Bills-and-Invoice"
+      }
+    ],
     "win": {
       "target": "nsis",
       "icon": "build/bill_sphere.png"
@@ -26,7 +37,11 @@
       "src/**/*",
       "build/**/*",
       "main.js"
-    ]
+    ],
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   },
   "dependencies": {
     "electron-updater": "^6.7.3"
