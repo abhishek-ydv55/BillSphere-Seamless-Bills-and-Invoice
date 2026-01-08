@@ -4,6 +4,13 @@ const path = require('path');
 
 let win;
 
+// Enable logging to see detailed update status in terminal
+autoUpdater.logger = console;
+
+if (!app.isPackaged) {
+    autoUpdater.forceDevUpdateConfig = true;
+}
+
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
 const createWindow = () => {
@@ -34,6 +41,15 @@ app.whenReady().then(() => {
         if (win) win.webContents.send('update_available');
     });
 
+    autoUpdater.on('update-not-available', () => {
+        if (win) win.webContents.send('update_not_available');
+    });
+
+    autoUpdater.on('error', (err) => {
+        console.error('Update Error:', err);
+        if (win) win.webContents.send('update_error', err.message);
+    });
+
     autoUpdater.on('update-downloaded', () => {
         if (win) win.webContents.send('update_downloaded');
     });
@@ -44,6 +60,10 @@ app.whenReady().then(() => {
 
     ipcMain.on('install_update', () => {
         autoUpdater.quitAndInstall();
+    });
+
+    ipcMain.on('check_for_updates', () => {
+        autoUpdater.checkForUpdates();
     });
 });
 

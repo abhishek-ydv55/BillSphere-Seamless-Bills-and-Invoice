@@ -48,6 +48,16 @@
                     </div>
                     <div class="setting-item">
                         <div class="setting-item-text">
+                            <h4>Check for Updates</h4>
+                            <p>Current Version: 1.0.1</p>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span id="update-status" style="font-size: 0.9rem; color: #666;"></span>
+                            <button id="check-updates-btn" class="btn btn-primary btn-sm">Check Now</button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-item-text">
                             <h4>Clear All Invoice Data</h4>
                             <p>Permanently delete all saved invoices. This action cannot be undone.</p>
                         </div>
@@ -59,6 +69,18 @@
     </div>
 
     <div id="toast-container"></div>
+
+    <!-- Update Available Modal -->
+    <div id="update-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Update Available</h3>
+            <p>A new version of BillSphere is available.</p>
+            <div class="modal-actions">
+                <button id="update-modal-close-btn" class="btn btn-danger">Later</button>
+                <button id="update-download-btn" class="btn btn-primary">Download Now</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Confirmation Modal -->
     <div id="confirmation-modal" class="modal-overlay">
@@ -74,6 +96,66 @@
 
     <script src="./settings.js"></script>
     <script src="./nav-animation.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkBtn = document.getElementById('check-updates-btn');
+            const statusLabel = document.getElementById('update-status');
+            const updateModal = document.getElementById('update-modal');
+
+            if (window.electronStore) {
+                // Button Click Handler
+                checkBtn.addEventListener('click', () => {
+                    checkBtn.disabled = true;
+                    checkBtn.innerText = 'Checking...';
+                    statusLabel.innerText = '';
+                    statusLabel.style.color = '#666';
+                    window.electronStore.checkForUpdates();
+                });
+
+                // Listeners
+                window.electronStore.on('update_available', () => {
+                    checkBtn.disabled = false;
+                    checkBtn.innerText = 'Check Now';
+                    statusLabel.innerText = 'Update available!';
+                    statusLabel.style.color = 'var(--success-color)';
+                    if(updateModal) updateModal.classList.add('visible');
+                });
+
+                window.electronStore.on('update_not_available', () => {
+                    checkBtn.disabled = false;
+                    checkBtn.innerText = 'Check Now';
+                    statusLabel.innerText = 'You are up to date.';
+                    statusLabel.style.color = 'var(--text-color)';
+                });
+
+                window.electronStore.on('update_error', (message) => {
+                    checkBtn.disabled = false;
+                    checkBtn.innerText = 'Check Now';
+                    statusLabel.innerText = 'Error checking updates.';
+                    statusLabel.style.color = 'var(--danger-color)';
+                    console.error(message);
+                });
+
+                // Download & Install Logic
+                window.electronStore.on('update_downloaded', () => {
+                    const downloadBtn = document.getElementById('update-download-btn');
+                    if (downloadBtn) {
+                        downloadBtn.innerText = 'Restart & Install';
+                        downloadBtn.disabled = false;
+                        const newBtn = downloadBtn.cloneNode(true);
+                        downloadBtn.parentNode.replaceChild(newBtn, downloadBtn);
+                        newBtn.addEventListener('click', () => window.electronStore.installUpdate());
+                    }
+                });
+
+                const downloadBtn = document.getElementById('update-download-btn');
+                if (downloadBtn) downloadBtn.addEventListener('click', () => { window.electronStore.downloadUpdate(); downloadBtn.innerText = 'Downloading...'; downloadBtn.disabled = true; });
+                
+                const closeBtn = document.getElementById('update-modal-close-btn');
+                if (closeBtn) closeBtn.addEventListener('click', () => updateModal.classList.remove('visible'));
+            }
+        });
+    </script>
 
     <style>
         .app-title-container {

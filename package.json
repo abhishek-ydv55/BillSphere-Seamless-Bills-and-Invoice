@@ -1,6 +1,6 @@
 {
   "name": "billsphere",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "BillSphere Invoice System",
   "main": "main.js",
   "scripts": {
