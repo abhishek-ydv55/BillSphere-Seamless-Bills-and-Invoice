@@ -1,0 +1,34 @@
+{
+  "name": "billsphere",
+  "version": "1.0.0",
+  "description": "BillSphere Invoice System",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "author": "Abhishek Kumar",
+  "devDependencies": {
+    "electron": "^29.1.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.billsphere.app",
+    "productName": "BillSphere",
+    "win": {
+      "target": "nsis",
+      "icon": "build/bill_sphere.png"
+    },
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "build/**/*",
+      "main.js"
+    ]
+  },
+  "dependencies": {
+    "electron-updater": "^6.7.3"
+  }
+}

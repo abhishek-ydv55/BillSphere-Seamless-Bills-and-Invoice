@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BillSphere - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./dashboard.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <header class="app-header">
+            <div class="app-title-container">
+                <img src="../build/bill_sphere.png" alt="BillSphere Logo" class="app-logo">
+                <h1>BillSphere</h1>
+            </div>
+            <div class="header-nav">
+                <div class="nav-pills">
+                    <a href="./index.html" class="nav-link">Create Invoice</a>
+                    <a href="./dashboard.html" class="nav-link active">Dashboard</a>
+                    <a href="./settings.html" class="nav-link">Settings</a>
+                </div>
+                <div id="current-date-display">
+                    <!-- Date will be populated by JavaScript -->
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section class="dashboard-summary">
+                <div class="summary-card">
+                    <div class="card-icon revenue">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2.273 5.625A4.483 4.483 0 016.75 2.25h10.5a4.483 4.483 0 014.477 3.375c.043.163.07.33.07.5V18a4.5 4.5 0 01-4.5 4.5H6.75A4.5 4.5 0 012.25 18v-1.5a.75.75 0 011.5 0V18a3 3 0 003 3h10.5a3 3 0 003-3V6.25a2.983 2.983 0 00-2.977-2.975H6.75a2.983 2.983 0 00-2.977 2.975V9a.75.75 0 01-1.5 0V6.125c0-.17.027-.337.073-.5zM12 12.25a.75.75 0 01.75-.75h3a.75.75 0 010 1.5h-3a.75.75 0 01-.75-.75zM12 15.25a.75.75 0 01.75-.75h3a.75.75 0 010 1.5h-3a.75.75 0 01-.75-.75zM9.75 9.5a1.75 1.75 0 100-3.5 1.75 1.75 0 000 3.5zM11.5 9.5a1.75 1.75 0 11-3.5 0 1.75 1.75 0 013.5 0zM6.5 12.5a1.75 1.75 0 100-3.5 1.75 1.75 0 000 3.5zM8.25 12.5a1.75 1.75 0 11-3.5 0 1.75 1.75 0 013.5 0zM9.75 15.5a1.75 1.75 0 100-3.5 1.75 1.75 0 000 3.5zM11.5 15.5a1.75 1.75 0 11-3.5 0 1.75 1.75 0 013.5 0z"></path></svg>
+                    </div>
+                    <div class="card-content">
+                        <h4>Total Revenue</h4>
+                        <p id="total-revenue">₹0.00</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-icon sent">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M3 6a3 3 0 013-3h12a3 3 0 013 3v12a3 3 0 01-3 3H6a3 3 0 01-3-3V6zm4.5 9a.75.75 0 01.75-.75h6a.75.75 0 010 1.5h-6a.75.75 0 01-.75-.75zm.75-3.75a.75.75 0 000 1.5h6a.75.75 0 000-1.5h-6z" clip-rule="evenodd"></path></svg>
+                    </div>
+                    <div class="card-content">
+                        <h4>Invoices Sent</h4>
+                        <p id="invoices-sent">0</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-icon pending">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd"></path></svg>
+                    </div>
+                    <div class="card-content">
+                        <h4>Pending Amount</h4>
+                        <p id="pending-amount">₹0.00</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-icon top-customer">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" /></svg>
+                    </div>
+                    <div class="card-content">
+                        <h4>Top Customer</h4>
+                        <p id="top-customer-name">N/A</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="dashboard-main-content">
+                <section class="chart-container">
+                    <h3>Monthly Revenue</h3>
+                    <canvas id="revenue-chart"></canvas>
+                </section>
+    
+                <section class="recent-invoices">
+                    <h3>Recent Invoices</h3>
+                    <div class="search-container">
+                        <input type="text" id="invoice-search" placeholder="Search by customer name or invoice #...">
+                    </div>
+                    <table id="invoices-table">
+                        <!-- Invoice rows will be populated by dashboard.js -->
+                    </table>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-title">Confirm Action</h3>
+            <p id="modal-message">Are you sure you want to proceed?</p>
+            <div class="modal-actions">
+                <button id="modal-cancel-btn" class="btn">Cancel</button>
+                <button id="modal-confirm-btn" class="btn btn-danger">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="./dashboard.js"></script>
+    <script src="./nav-animation.js"></script>
+    <script>
+        // This small script ensures the theme is applied on page load,
+        // even though the toggle is on another page.
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+        });
+    </script>
+
+    <style>
+        .app-title-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .app-logo {
+            height: 40px;
+            width: 40px;
+        }
+
+        .header-right-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-right-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        #current-date-display {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-color);
+            text-align: right;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-grow: 1;
+            margin-left: 40px;
+        }
+
+        .nav-pills {
+            display: flex;
+            position: relative; /* Required for glider positioning */
+            /* Glassmorphism Effect */
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px); /* For Safari */
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 25px; /* Slightly larger radius */
+            padding: 8px; /* Increased padding for a 'bigger box' feel */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .nav-pills .nav-link {
+            position: relative; /* To ensure links are on top of the glider */
+            padding: 8px 16px;
+            border-radius: 16px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+            font-weight: 500;
+        }
+        .nav-pills .nav-link.active {
+            background-color: var(--primary-color);
+            color: #fff; /* This will be overridden, but good for fallback */
+        }
+
+        /* Animation styles from index.html are copied here */
+        .nav-pills .nav-link.active {
+            background-color: transparent;
+            color: #fff;
+        }
+        .glider {
+            position: absolute;
+            top: 8px;
+            height: calc(100% - 16px);
+            border-radius: 16px;
+            background-color: var(--primary-color);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 0;
+        }
+    </style>
+
+</body>
+</html>

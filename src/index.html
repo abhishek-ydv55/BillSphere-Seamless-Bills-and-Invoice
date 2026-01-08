@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BillSphere</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <header class="app-header">
+            <div class="app-title-container">
+                <img src="../build/bill_sphere.png" alt="BillSphere Logo" class="app-logo">
+                <h1>BillSphere</h1>
+            </div>
+            <div class="header-nav">
+                <div class="nav-pills">
+                    <a href="./index.html" class="nav-link active">Create Invoice</a>
+                    <a href="./dashboard.html" class="nav-link">Dashboard</a>
+                    <a href="./settings.html" class="nav-link">Settings</a>
+                </div>
+                <div id="current-date-display">
+                    <!-- Date will be populated by JavaScript -->
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Invoice Generator View -->
+            <div id="billsphere-generator">
+                <div class="invoice-actions">
+                    <button id="mark-as-paid-btn" class="btn btn-success">Mark as Paid</button>
+                    <button id="save-invoice-btn" class="btn btn-primary">Save Invoice</button>
+                </div>
+                <div id="invoice-paper">
+                    <!-- Generic Invoice Layout -->
+                    <div class="invoice-layout">
+                        <!-- Header Section -->
+                        <header class="invoice-header-section">
+                            <div class="header-content-left">
+                                <h1 class="doc-title" contenteditable="true">TAX INVOICE</h1>
+                                <p class="doc-subtitle" contenteditable="true">Original for Recipient</p>
+                                <div class="meta-grid">
+                                    <div class="meta-row">
+                                        <span class="meta-label" contenteditable="true">Invoice No:</span>
+                                        <div class="meta-value-group">
+                                            <input type="text" id="invoice-prefix" data-field="invoicePrefix" placeholder="INV-" class="bare-input" style="width: 40px; text-align:right;">
+                                            <input type="text" id="invoice-num" placeholder="001" class="bare-input" style="width: 60px;">
+                                        </div>
+                                    </div>
+                                    <div class="meta-row">
+                                        <span class="meta-label" contenteditable="true">Date:</span>
+                                        <input type="date" id="invoice-date" class="bare-input">
+                                    </div>
+                                    <div class="meta-row">
+                                        <span class="meta-label" contenteditable="true">Due Date:</span>
+                                        <input type="date" id="due-date" class="bare-input">
+                                    </div>
+                                    <div class="meta-row">
+                                        <span class="meta-label" contenteditable="true">Status:</span>
+                                        <span class="meta-value" contenteditable="true">Due</span>
+                                    </div>
+                                    <div class="meta-row">
+                                        <span class="meta-label">Buyer's Order Detail:</span>
+                                        <input type="text" id="buyers-order-detail" class="bare-input" placeholder="Enter Order No.">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="header-content-right">
+                                <div class="logo-wrapper">
+                                    <img id="company-logo-img" src="../build/bill_sphere.png" alt="Logo" onerror="this.onerror=null;this.src='../build/bill_sphere.png';">
+                                    <label for="company-logo-upload" class="logo-upload-trigger">Change Logo</label>
+                                    <input type="file" id="company-logo-upload" accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+                        </header>
+
+                        <!-- Party Information Section -->
+                        <section class="party-info-section">
+                            <!-- Bill From (Seller) -->
+                            <div class="party-card left-card">
+                                <h4 class="party-title" contenteditable="true">Bill From</h4>
+                                <div class="party-details">
+                                    <h3 id="company-name" contenteditable="true" data-field="companyName">Your Company Name</h3>
+                                    <div id="company-address" contenteditable="true" data-field="companyAddress">123 Business Rd, Business City, 12345</div>
+                                    <div class="party-meta">
+                                        <div class="pm-row"><span contenteditable="true">GSTIN/Tax ID:</span> <span id="company-gst" contenteditable="true" data-field="companyGst">YOURGSTIN12345</span></div>
+                                        <div class="pm-row"><span contenteditable="true">Phone:</span> <span id="company-phone" contenteditable="true" data-field="companyPhone">+1 234 567 890</span></div>
+                                        <div class="pm-row"><span contenteditable="true">Email:</span> <span id="company-email" contenteditable="true" data-field="companyEmail">email@example.com</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bill To (Buyer) -->
+                            <div class="party-card right-card">
+                                <h4 class="party-title" contenteditable="true">Bill To</h4>
+                                <div class="party-details">
+                                    <input type="text" id="customer-name" placeholder="Customer / Company Name" class="bare-input-lg">
+                                    <textarea id="customer-address" placeholder="Billing Address" class="bare-textarea"></textarea>
+                                    <div class="party-meta">
+                                        <div class="pm-row"><span contenteditable="true">Place of Supply:</span> <span contenteditable="true">State/Country</span></div>
+                                        <div class="pm-row"><span contenteditable="true">Tax ID:</span> <span contenteditable="true">Optional</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Line Items -->
+                        <section class="items-section">
+                            <table id="items-table" class="generic-table">
+                                <thead>
+                                    <tr>
+                                        <th contenteditable="true">Item Description</th>
+                                        <th contenteditable="true" style="width: 80px;">HSN Code</th>
+                                        <th contenteditable="true" style="width: 70px;">Qty</th>
+                                        <th contenteditable="true" style="width: 100px;">Rate</th>
+                                        <th contenteditable="true" style="width: 120px;">Tax (%)</th>
+                                        <th contenteditable="true" style="width: 120px; text-align: right;">Amount</th>
+                                        <th style="width: 30px;" class="action-col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="invoice-items-body">
+                                    <!-- Rows generated by JS -->
+                                </tbody>
+                            </table>
+                            <button id="add-item-btn" class="btn-dashed">+ Add Line Item</button>
+                        </section>
+
+                        <!-- Summary & Totals -->
+                        <section class="summary-section">
+                            <div class="summary-left">
+                                <div class="amount-words-box">
+                                    <span class="aw-label" contenteditable="true">Amount in Words:</span>
+                                    <p class="aw-value" contenteditable="true">Zero Only</p>
+                                </div>
+                                <div class="bank-details-box">
+                                    <h4 contenteditable="true">Bank Details</h4>
+                                    <div class="bank-grid">
+                                        <div class="b-row"><span contenteditable="true">Bank:</span> <span id="bank-name" contenteditable="true" data-field="bankName">Bank Name</span></div>
+                                        <div class="b-row"><span contenteditable="true">A/c No:</span> <span id="account-number" contenteditable="true" data-field="accountNumber">591820110000144</span></div>
+                                        <div class="b-row"><span contenteditable="true">IFSC/SWIFT:</span> <span id="ifsc-code" contenteditable="true" data-field="ifscCode">BKID0005918</span></div>
+                                        <div class="b-row"><span contenteditable="true">Payee ID:</span> <span id="payee-id" contenteditable="true" data-field="payeeId">GDD/PAYEE/5925</span></div>
+                                    </div>
+                                </div>
+                                <div class="terms-box">
+                                    <h4 contenteditable="true">Terms & Conditions</h4>
+                                    <ul contenteditable="true">
+                                        <li>ENSURE TIMELY PAYMENT</li>
+                                        <li>E. & O.E.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="summary-right">
+                                <div class="totals-grid">
+                                    <div class="t-row">
+                                        <span class="t-label" contenteditable="true">Subtotal</span>
+                                        <span class="t-value" id="subtotal">0.00</span>
+                                    </div>
+                                    <div class="t-row">
+                                        <span class="t-label" contenteditable="true">Total Tax</span>
+                                        <span class="t-value" id="gst-amount">0.00</span>
+                                    </div>
+                                    <div class="t-row">
+                                        <span class="t-label" contenteditable="true">Rounding</span>
+                                        <span class="t-value" contenteditable="true">0.00</span>
+                                    </div>
+                                    <div class="t-row grand-total-row">
+                                        <span class="t-label" contenteditable="true">Grand Total</span>
+                                        <span class="t-value" id="grand-total">0.00</span>
+                                    </div>
+                                    <div class="t-row" style="margin-top: 5px;">
+                                        <span class="t-label" contenteditable="true">Amount Paid</span>
+                                        <span class="t-value"><input type="number" id="amount-paid" value="0" class="bare-input" style="text-align: right;"></span>
+                                    </div>
+                                    <div class="t-row" style="font-weight: 700; color: var(--primary-color); border-top: 1px dashed #ccc; padding-top: 5px;">
+                                        <span class="t-label" contenteditable="true">Balance Due</span>
+                                        <span class="t-value" id="balance-due">₹0.00</span>
+                                    </div>
+                                </div>
+                                <div class="signature-box">
+                                    <p style="font-size: 0.8rem; color: #666; font-style: italic;">This is an electronically generated draft and no signature is required.</p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div id="add-item-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Add New Item</h3>
+            <div class="modal-form">
+                <div class="form-group">
+                    <label for="modal-item-description">Description</label>
+                    <input type="text" id="modal-item-description" placeholder="e.g., Web Design Services">
+                </div>
+                <div class="form-group">
+                    <label for="modal-item-hsn">HSN Code</label>
+                    <input type="text" id="modal-item-hsn" placeholder="HSN/SAC">
+                </div>
+                <div class="form-group">
+                    <label for="modal-item-quantity">Quantity</label>
+                    <input type="number" id="modal-item-quantity" value="1" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="modal-item-rate">Rate</label>
+                    <input type="number" id="modal-item-rate" value="0.00" step="0.01" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="modal-item-gst">GST Rate (%)</label>
+                    <input type="number" id="modal-item-gst" value="18" step="0.01" min="0">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="modal-cancel-item-btn" class="btn btn-danger">Cancel</button>
+                <button id="modal-save-item-btn" class="btn btn-primary">Add Item</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoice Preview Modal -->
+    <div id="invoice-preview-modal" class="modal-overlay">
+        <div class="modal-content-lg">
+            <div class="modal-header">
+                <h3>Invoice Preview</h3>
+                <div class="modal-actions">
+                    <button id="modal-mark-paid-btn" class="btn btn-success">Mark as Paid</button>
+                    <button id="modal-confirm-save-btn" class="btn btn-primary">Save Invoice</button>
+                    <button id="modal-download-pdf-btn" class="btn btn-primary">Download PDF</button>
+                    <button id="modal-close-preview-btn" class="btn btn-danger">Close</button>
+                </div>
+            </div>
+            <div id="preview-content">
+                <!-- The invoice preview will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-title">Confirm Action</h3>
+            <p id="modal-message">Are you sure you want to proceed?</p>
+            <div class="modal-actions">
+                <button id="modal-cancel-btn" class="btn btn-danger">Cancel</button>
+                <button id="modal-confirm-btn" class="btn btn-danger">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Your App's Script -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="./script.js"></script>
+    <script src="./nav-animation.js"></script>
+    <script>
+        // This small script ensures the theme is applied on page load,
+        // even though the toggle is on another page.
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+
+            // Auto-select text on focus for inputs and contenteditable elements
+            document.addEventListener('focusin', function(e) {
+                const target = e.target;
+                if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+                    setTimeout(() => target.select(), 50);
+                } else if (target.isContentEditable) {
+                    setTimeout(() => {
+                        const range = document.createRange();
+                        range.selectNodeContents(target);
+                        const sel = window.getSelection();
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    }, 50);
+                }
+            });
+
+            // Auto-update Amount in Words
+            const grandTotalEl = document.getElementById('grand-total');
+            const amountInWordsEl = document.querySelector('.aw-value');
+
+            function numToWords(n) {
+                const a = ['','One ','Two ','Three ','Four ','Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
+                const b = ['', '', 'Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+                
+                n = Math.floor(n);
+                if (n === 0) return 'Zero Only';
+                
+                const format = (num) => {
+                    if (num === 0) return '';
+                    if (num < 20) return a[num];
+                    return b[Math.floor(num/10)] + (num%10 !== 0 ? ' ' + a[num%10] : ' ');
+                };
+
+                let str = '';
+                if (Math.floor(n / 10000000) > 0) { str += format(Math.floor(n / 10000000)) + 'Crore '; n %= 10000000; }
+                if (Math.floor(n / 100000) > 0) { str += format(Math.floor(n / 100000)) + 'Lakh '; n %= 100000; }
+                if (Math.floor(n / 1000) > 0) { str += format(Math.floor(n / 1000)) + 'Thousand '; n %= 1000; }
+                if (Math.floor(n / 100) > 0) { str += format(Math.floor(n / 100)) + 'Hundred '; n %= 100; }
+                if (n > 0) { str += 'and ' + format(n); }
+                
+                return str.trim() + ' Only';
+            }
+
+            if (grandTotalEl && amountInWordsEl) {
+                const observer = new MutationObserver(function() {
+                    const totalText = grandTotalEl.innerText.replace(/[^0-9.]/g, '');
+                    const totalVal = parseFloat(totalText);
+                    if (!isNaN(totalVal)) {
+                        amountInWordsEl.innerText = numToWords(totalVal);
+                    }
+                });
+                
+                observer.observe(grandTotalEl, { childList: true, characterData: true, subtree: true });
+            }
+        });
+    </script>
+
+    <style>
+        .app-title-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .app-logo {
+            height: 40px;
+            width: 40px;
+        }
+
+        #current-date-display {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-color);
+            text-align: right;
+        }
+
+        .header-nav {
+            justify-content: space-between;
+            flex-grow: 1;
+            margin-left: 40px;
+        }
+
+        .nav-pills {
+            display: flex;
+            position: relative; /* Required for glider positioning */
+            /* Glassmorphism Effect */
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px); /* For Safari */
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 25px; /* Slightly larger radius */
+            padding: 8px; /* Increased padding for a 'bigger box' feel */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .nav-pills .nav-link {
+            position: relative; /* To ensure links are on top of the glider */
+            padding: 8px 16px;
+            border-radius: 16px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-pills .nav-link.active {
+            /* The active link itself is now transparent, the glider provides the color */
+            background-color: transparent;
+            color: #fff; /* Keep text color white */
+        }
+
+        .glider {
+            position: absolute;
+            top: 8px; /* Match the container's padding */
+            height: calc(100% - 16px); /* Match the container's padding */
+            border-radius: 16px;
+            background-color: var(--primary-color);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); /* Smooth slide animation */
+            z-index: 0;
+        }
+
+        .invoice-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        /* Generic Invoice System Styles */
+        #invoice-paper {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 10mm;
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            font-size: 9.5pt;
+            color: #000;
+            position: relative;
+        }
+
+        .invoice-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .invoice-header-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .header-content-left {
+            flex: 2;
+        }
+
+        .doc-title {
+            font-size: 20pt;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+
+        .doc-subtitle {
+            font-size: 10pt;
+            color: #666;
+            margin: 0 0 5px 0;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 8px 5px;
+            max-width: 300px;
+            align-items: center;
+        }
+
+        .meta-value-group {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .meta-row {
+            display: contents;
+        }
+
+        .meta-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .header-content-right {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+        }
+
+        .logo-wrapper img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .logo-upload-trigger {
+            display: block;
+            text-align: right;
+            font-size: 8pt;
+            color: var(--primary-color);
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .party-info-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .party-card {
+            flex: 1;
+            border: 1px solid #eee;
+            padding: 5px;
+            border-radius: 6px;
+            background: #fcfcfc;
+            border-top: 3px solid var(--primary-color);
+        }
+
+        .party-title {
+            margin: 0 0 10px 0;
+            font-size: 9pt;
+            text-transform: uppercase;
+            color: var(--primary-color);
+            font-weight: 700;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        .party-details h3 {
+            margin: 0 0 5px 0;
+            font-size: 11pt;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .party-meta {
+            margin-top: 10px;
+            font-size: 9pt;
+        }
+
+        .pm-row {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 2px;
+        }
+
+        .bare-input, .bare-input-lg, .bare-textarea {
+            border: none;
+            background: transparent;
+            width: 100%;
+            font-family: inherit;
+            color: inherit;
+        }
+        
+        .bare-input:focus, .bare-input-lg:focus, .bare-textarea:focus {
+            outline: 1px dashed #ccc;
+            background: #fff;
+        }
+
+        .bare-input-lg {
+            font-size: 11pt;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        [contenteditable]:empty::before {
+            content: attr(data-placeholder);
+            color: #aaa;
+            pointer-events: none;
+        }
+
+        .bare-textarea {
+            resize: none;
+            min-height: 45px;
+        }
+
+        .items-section {
+            margin: 0;
+        }
+
+        .generic-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+        }
+
+        .generic-table th {
+            background: #eef2ff;
+            color: var(--primary-color);
+            padding: 4px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 9pt;
+            border: 1px solid #c7d2fe;
+        }
+
+        .generic-table td {
+            padding: 2px;
+            border: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+
+        .generic-table input, .generic-table textarea {
+            width: 100%;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            background: transparent;
+            font-family: inherit;
+            font-size: inherit;
+            color: #000;
+            padding: 8px;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        .generic-table input:hover, .generic-table textarea:hover {
+            background-color: #f8f9fa;
+        }
+
+        .generic-table input:focus, .generic-table textarea:focus { 
+            outline: none; 
+            background-color: #fff;
+            border-color: var(--primary-color, #6c5ce7);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+
+        .item-qty input, .item-rate input, .item-gst input {
+            text-align: center;
+        }
+        
+        .item-desc input, .item-desc textarea {
+            text-transform: uppercase;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        .generic-table input::placeholder { color: #aaa; }
+
+        .btn-dashed {
+            width: 100%;
+            border: 1px dashed #ccc;
+            background: none;
+            padding: 8px;
+            margin-top: 10px;
+            color: #666;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .btn-dashed:hover { background: #f9f9f9; }
+
+        .summary-section {
+            display: flex;
+            gap: 30px;
+            margin-top: 10px;
+            page-break-inside: avoid;
+        }
+
+        .summary-left { flex: 6; }
+        .summary-right { flex: 4; }
+
+        .amount-words-box {
+            margin-bottom: 10px;
+            font-style: italic;
+            background: #eef2ff;
+            color: var(--primary-color);
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #e0e7ff;
+        }
+
+        .bank-details-box, .terms-box {
+            margin-bottom: 10px;
+        }
+        
+        .bank-details-box h4, .terms-box h4 {
+            font-size: 9pt;
+            text-transform: uppercase;
+            color: var(--primary-color);
+            margin: 0 0 5px 0;
+        }
+
+        .totals-grid {
+            background: #fcfcfc;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #eee;
+        }
+
+        .t-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .grand-total-row {
+            border-top: 2px solid #ddd;
+            padding: 5px;
+            margin-top: 8px;
+            font-weight: 700;
+            font-size: 12pt;
+            background-color: var(--primary-color);
+            color: #fff;
+            border-radius: 4px;
+        }
+
+        .signature-box {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .sign-space {
+            height: 30px;
+        }
+
+        .invoice-stamp {
+            position: absolute;
+            top: 20px;
+            right: 150px;
+            left: auto;
+            width: max-content;
+            white-space: nowrap;
+            font-size: 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border: 3px solid;
+            padding: 5px 15px;
+            transform: rotate(-15deg);
+            opacity: 0.6;
+            z-index: 10;
+            pointer-events: none;
+            color: #555;
+            border-color: #555;
+        }
+        .stamp-paid { color: #27ae60; border-color: #27ae60; }
+        .stamp-due { color: #f39c12; border-color: #f39c12; }
+        .stamp-overdue { color: #c0392b; border-color: #c0392b; }
+
+        @media print {
+            body { background: white; }
+            .app-header, .invoice-actions, .modal-overlay { display: none; }
+            #invoice-paper { box-shadow: none; margin: 0; width: 100%; }
+        }
+
+        /* PDF Compact Mode Styles - Applied during PDF generation */
+        .compact-pdf {
+            padding: 10mm !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        .compact-pdf .invoice-layout { gap: 2px !important; }
+        .compact-pdf .invoice-header-section { margin-bottom: 10px !important; }
+        .compact-pdf .doc-title { font-size: 18pt !important; }
+        .compact-pdf .doc-subtitle { font-size: 10pt !important; margin-bottom: 5px !important; }
+        .compact-pdf .logo-wrapper { margin-right: 0 !important; }
+        .compact-pdf .logo-wrapper img { width: 60px !important; height: 60px !important; object-fit: contain !important; max-width: 100% !important; }
+        
+        .compact-pdf .party-info-section { gap: 10px !important; margin-bottom: 5px !important; }
+        .compact-pdf .party-card { padding: 5px !important; }
+        .compact-pdf .party-title { font-size: 10pt !important; margin-bottom: 2px !important; }
+        .compact-pdf .party-details h3 { font-size: 11pt !important; margin-bottom: 2px !important; }
+        .compact-pdf .party-meta { font-size: 9pt !important; margin-top: 2px !important; }
+        .compact-pdf .bare-input-lg { font-size: 11pt !important; margin-bottom: 2px !important; }
+        
+        .compact-pdf .generic-table { table-layout: fixed !important; width: 100% !important; }
+        .compact-pdf .generic-table th { font-size: 9pt !important; padding: 4px !important; word-wrap: break-word !important; }
+        .compact-pdf .generic-table td { padding: 4px !important; word-wrap: break-word !important; }
+        
+        /* Specific column widths for PDF to prevent overflow */
+        .compact-pdf .generic-table th:nth-child(1) { width: 30% !important; }
+        .compact-pdf .generic-table th:nth-child(2) { width: 15% !important; }
+        .compact-pdf .generic-table th:nth-child(3) { width: 10% !important; }
+        .compact-pdf .generic-table th:nth-child(4) { width: 15% !important; }
+        .compact-pdf .generic-table th:nth-child(5) { width: 10% !important; }
+        .compact-pdf .generic-table th:nth-child(6) { width: 20% !important; }
+        
+        .compact-pdf .generic-table input, 
+        .compact-pdf .generic-table textarea, 
+        .compact-pdf .generic-table span { font-size: 9pt !important; padding: 2px !important; min-height: auto !important; }
+        
+        .compact-pdf .invoice-stamp {
+            right: 160px !important;
+            top: 20px !important;
+            opacity: 1 !important;
+            z-index: 9999 !important;
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        .compact-pdf .summary-section { 
+            gap: 10px !important; 
+            margin-top: 5px !important; 
+            page-break-inside: auto !important;
+            flex-wrap: nowrap !important;
+        }
+        .compact-pdf .summary-left { flex: 0 0 58% !important; width: 58% !important; }
+        .compact-pdf .summary-right { flex: 0 0 38% !important; width: 38% !important; }
+        .compact-pdf .amount-words-box { font-size: 9pt !important; padding: 4px !important; margin-bottom: 5px !important; }
+        .compact-pdf .bank-details-box h4, .compact-pdf .terms-box h4 { font-size: 10pt !important; margin-bottom: 2px !important; }
+        .compact-pdf .bank-grid, .compact-pdf .terms-box ul { font-size: 9pt !important; }
+        .compact-pdf .totals-grid { padding: 5px !important; }
+        .compact-pdf .t-row { margin-bottom: 2px !important; font-size: 9pt !important; }
+        .compact-pdf .grand-total-row { font-size: 11pt !important; padding: 4px !important; margin-top: 4px !important; }
+    </style>
+
+</body>
+</html>

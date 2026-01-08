@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Production build output (Electron Builder / Forge)
+dist/
+out/
+
+# Local environment variables
+.env
+
+# Logs
+npm-debug.log
+yarn-error.log
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE configurations (Optional)
+.idea/
+.vscode/
+*.swp
